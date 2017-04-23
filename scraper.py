@@ -10,7 +10,7 @@ import sys
 from ctypes import c_long
 
 try:
-    THREADS = sys.argv[2]
+    THREADS = int(sys.argv[2])
 except IndexError:
     THREADS = 25
 
