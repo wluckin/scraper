@@ -1,9 +1,9 @@
 # A simple site scraper
-Scraper is a terrible Python script to download websites.
+Scraper is a mediocre Python script to download websites.
 It's rather multithreaded, and easier to use than HTTrack.
 
 ## Good things
-- Fast (probably)
+- Fast (unless things break)
 - Real simple to use
 - Works on most websites
 - *New!* Works on subdomains too!
@@ -21,5 +21,4 @@ If you don't want that, change your current working directory.
 
 > python3 scraper.py url [number_of_threads]
 
-Written in an hour by me and @tomparks
-
+Written in revision time by me and @tomparks

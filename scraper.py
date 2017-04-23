@@ -82,8 +82,10 @@ class Getter(mp.Process):
     def _put_url(self, url, link):
         """ If we haven't seen this URL before, add it to the queue """
         new_url = urljoin(url, link)
+        new_url = new_url.split('#')[0]
+        assert('#' not in new_url)
         if new_url not in self.seen:
-            self.queue.put(urljoin(url, link))
+            self.queue.put(new_url)
             self.seen.append(new_url)
 
     def _get_one(self, url):
@@ -100,8 +102,6 @@ class Getter(mp.Process):
                   "wrong domain", parsed_url.domain,
                   bcolors.ENDC)
             return
-        else:
-            print(url)
 
         # Does it exist?
         try:
@@ -112,9 +112,16 @@ class Getter(mp.Process):
 
         # Does it actually exist?
         # I follow redirects because that's easy
-        if req.status_code != requests.codes.ok:
-            print(bcolors.FAIL, "fail on", url, "status", req.status, bcolors.ENDC)
+        if req.status_code == requests.status_codes.codes.service_unavailable:
+            time.sleep(0.1)
+            self.queue.put(url)
+            print(bcolors.OKBLUE, "retrying", url, bcolors.ENDC)
             return
+        elif req.status_code != requests.codes.ok:
+            print(bcolors.FAIL, "fail on", url, "status", req.status_code, bcolors.ENDC)
+            return
+        else:
+            print(url)
 
         # If it's a text file, parse it for other files we want
         try:
@@ -199,3 +206,7 @@ for g in getters:
 
 # Happy days
 print('Site downloaded!')
+
+
+
+'https://mitpress.mit.edu/sites/default/files/titles/content/sicm/book-Z-H-1.html#titlepage'.split('#')[0]
