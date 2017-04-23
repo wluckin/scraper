@@ -7,8 +7,12 @@ from functools import reduce
 import time
 import os
 import sys
+import re
 from ctypes import c_long
 from tldextract import extract
+
+# searches for a file extension
+is_file = re.compile('\.[^\/]*$')
 
 try:
     THREADS = int(sys.argv[2])
@@ -86,7 +90,7 @@ class Getter(mp.Process):
         """ Download a single URL, and parse it for further URLS """
         # If it's not on this domain, we don't want it
         # This will fuck up fancy websites.
-        
+
         parsed_url = extract(url)
 
         if (parsed_url.domain != parsed_root.domain
@@ -129,15 +133,25 @@ class Getter(mp.Process):
 
         # Try and create the file structure
         try:
-            os.makedirs(os.path.dirname(path))
+            # if the path has a file extension, don't make the filename a folder
+            # otherwise assume it's implicitly index.html
+            if is_file.search(path):
+                os.makedirs(os.path.dirname(path))
+            else:
+                os.makedirs(path)
+            print(bcolors.UNDERLINE, "  made path", os.path.dirname(path), bcolors.ENDC)
         except FileExistsError:
-            pass
+            print(bcolors.UNDERLINE, "  failed to make path", os.path.dirname(path), bcolors.ENDC)
+
 
         # If it's a bare URL, assume it's an index page
         # This might break fancy websites
         if os.path.isdir(path):
             path = os.path.join(path, 'index.html')
+            print(bcolors.UNDERLINE, "  added idx", path, bcolors.ENDC)
+
         with open(path, "wb") as f:
+            print(bcolors.UNDERLINE, "  writing to", path, bcolors.ENDC)
             f.write(req.content)
 
 
