@@ -8,6 +8,7 @@ import time
 import os
 import sys
 from ctypes import c_long
+from tldextract import extract
 
 try:
     THREADS = int(sys.argv[2])
@@ -27,11 +28,11 @@ class bcolors:
 
 # Take in URL from cmd
 root = sys.argv[1]
+parsed_root = extract(root)
 # Max queue size because reasons
 # It dies if the queue fills up
 # This could be considered a design flaw
 urls_to_get = mp.Queue(32000)
-
 
 # Put these in the queue when you've got bored
 class Stop():
@@ -85,8 +86,15 @@ class Getter(mp.Process):
         """ Download a single URL, and parse it for further URLS """
         # If it's not on this domain, we don't want it
         # This will fuck up fancy websites.
-        if not url.startswith(root):
-            print(bcolors.OKGREEN, "Ignoring", url, "wrong domain", bcolors.ENDC)
+        
+        parsed_url = extract(url)
+
+        if (parsed_url.domain != parsed_root.domain
+            or parsed_url.suffix != parsed_root.suffix):
+            print(bcolors.OKGREEN,
+                  "Ignoring", url,
+                  "wrong domain", parsed_url.domain,
+                  bcolors.ENDC)
             return
         else:
             print(url)
@@ -116,7 +124,7 @@ class Getter(mp.Process):
             pass
 
         # This is really bad
-        rel = url[len(root):]
+        rel = url[url.find(parsed_url.suffix)+len(parsed_url.suffix)+1:]
         path = os.path.join(os.getcwd(), rel)
 
         # Try and create the file structure
