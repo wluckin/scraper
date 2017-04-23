@@ -6,13 +6,14 @@ It's rather multithreaded, and easier to use than HTTrack.
 - Fast (probably)
 - Real simple to use
 - Works on most websites
+- *New!* Works on subdomains too!
 
 ## Bad things
-- Doesn't work on some websites - assumes all pages that you want are
-  served from the same root domain. It will in current state ignore
-  subdomains. *Don't be put off if you want this*. It's a 30 second
-  change, look at Line 84. 
-- You're lucky there's a URL option at all, really
+- You're lucky there's a URL option at all, really. The tool is very barebones.
+- If the webserver you're scraping serves binary files without a file
+  extension, the script assumes they're an index.html in a folder
+  named the same as the file. *This shouldn't really be an issue, but
+  if something really weird is going on this could be why.*
 
 ## Use
 Scraper dumps the site into the current working directory.
