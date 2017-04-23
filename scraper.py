@@ -151,8 +151,8 @@ for getter in getters:
 
 # How many worker drones do we start with?
 print(bcolors.WARNING,
-      "workers:", workers_working,
-      "queue size:", urls_to_get.empty(),
+      "workers:", workers_working.value,
+      "queue empty:", urls_to_get.empty(),
       bcolors.ENDC)
 
 # This is weird.
@@ -165,7 +165,7 @@ time.sleep(2)
 while workers_working.value != 0 or not urls_to_get.empty():
     print(bcolors.WARNING,
           "workers:", workers_working.value,
-          "queue size:", urls_to_get.qsize(),
+          "queue size:", urls_to_get.qsize() if sys.platform != "darwin" else "UNSUPPORTED",
           bcolors.ENDC)
     time.sleep(0.1)
 
