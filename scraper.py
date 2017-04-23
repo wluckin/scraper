@@ -11,7 +11,7 @@ from ctypes import c_long
 
 try:
     THREADS = sys.argv[2]
-except KeyError:
+except IndexError:
     THREADS = 25
 
 # Have colorised output
@@ -177,4 +177,3 @@ for g in getters:
 
 # Happy days
 print('Site downloaded!')
-
